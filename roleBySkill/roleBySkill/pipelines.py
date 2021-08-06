@@ -7,15 +7,27 @@
 # useful for handling different item types with a single interface
 import json
 
+import pymysql
 from itemadapter import ItemAdapter
 
 
 class RolebyskillPipeline:
     def __init__(self):
-        self.file = open('/role.json', mode='w', encoding='utf-8')
+        # 连接数据库
+        self.connect=pymysql.connect(host='localhost',port=3307,user='root',password='root',db='crawlrolebyspecifiedskill')
+        self.cursor=self.connect.cursor()
+
+    def open_spider(self, spider):
+        # 爬虫开始前，清空所有表的数据
+        sqlStatement1 = "TRUNCATE TABLE role"
+        self.cursor.execute(sqlStatement1);
+        self.connect.commit() #执行
+
     def process_item(self, item, spider):
-        jsondata = json.dumps(dict(item), ensure_ascii=False) + "\n"
-        self.file.write(jsondata)
+        sqlStatement = "insert into crawlrolebyspecifiedskill.role (id, name, status, price)VALUES ({},'{}','{}',{})"
+        self.cursor.execute(sqlStatement.format(item['id'],item['name'],item['status'],item['price']))
+        self.connect.commit()#执行添加
         return item
     def close_spider(self, spider):
-        self.file.close()
+        self.cursor.close()
+        self.connect.close()  #关闭连接

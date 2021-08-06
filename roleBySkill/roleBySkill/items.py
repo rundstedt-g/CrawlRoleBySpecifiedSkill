@@ -12,4 +12,5 @@ class RolebyskillItem(scrapy.Item):
     name = scrapy.Field()
     id = scrapy.Field()
     price = scrapy.Field()
+    status = scrapy.Field()
 
