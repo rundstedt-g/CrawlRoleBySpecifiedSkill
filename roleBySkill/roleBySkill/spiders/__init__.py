@@ -35,10 +35,10 @@ class RolebyskillSpider(scrapy.Spider):
         print('分页请求：' + response.url)
         sites = json.loads(response.text)
         for i in sites[0]['pageData']:
-            roleUid = i['sellerGameId']
+            itemId = i['id']
 
             newSkill_time_stamp = str(int(time.time()*1000))
-            skillUrl = 'http://jishi.woniu.com/9yin/roleMsg.do?serverId=186100101&roleUid='+roleUid+'&type=SkillContainer&_='+newSkill_time_stamp
+            skillUrl = 'http://jishi.woniu.com/9yin/roleMsgInfo.do?serverId=186100101&itemId='+str(itemId)+'&type=SkillContainer&_='+newSkill_time_stamp
             yield scrapy.Request(skillUrl, callback=self.parse_skillcontent,meta={'name':i['itemName'],'id':i['id'],'price':i['price'],'status':i['status']})
 
     def parse_skillcontent(self, response):
